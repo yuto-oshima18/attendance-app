@@ -7,17 +7,8 @@ erDiagram
         timestamp email_verified_at
         varchar(255) password
         varchar(100) remember_token
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    admins {
-        bigint_unsigned id PK
-        varchar(255) name
-        varchar(255) email UK
-        timestamp email_verified_at
-        varchar(255) password
-        varchar(100) remember_token
+        enum attendance_status
+        boolean admin_status
         timestamp created_at
         timestamp updated_at
     }
@@ -28,11 +19,12 @@ erDiagram
         date date 
         time clock_in
         time clock_out
+        varchar(255) comment
         timestamp created_at
         timestamp updated_at
     }
     
-    breaks {
+    break_times {
         bigint_unsigned id PK
         bigint_unsigned attendance_id FK
         time break_in
@@ -47,12 +39,13 @@ erDiagram
         time new_clock_in
         time new_clock_out
         varchar(255) comment
-        ENUM approval_status
+        enum approval_status
+        date application_date
         timestamp created_at
         timestamp updated_at
     }
 
-    newbreaks {
+    proposal_breaks {
         bigint_unsigned id PK
         bigint_unsigned application_id FK
         time new_break_in
@@ -62,7 +55,7 @@ erDiagram
     }
     
     users ||--o{ attendance_records : "has many"
-    attendance_records ||--o{ breaks : "has many"
+    attendance_records ||--o{ break_times : "has many"
     attendance_records ||--o{ applications : "has many"
-    applications ||--o{ newbreaks : "has many"
+    applications ||--o{ proposal_breaks : "has many"
 ```
