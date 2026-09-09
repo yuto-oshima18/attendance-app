@@ -173,7 +173,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         EventServiceProvider::class,
         RouteServiceProvider::class,
-        FortifyServiceProvider::class, 
+        FortifyServiceProvider::class,
     ])->toArray(),
 
     /*

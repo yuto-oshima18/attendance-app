@@ -25,4 +25,9 @@ class AttendanceRecord extends Model
     {
         return $this->hasMany(BreakTime::class);
     }
+
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
 }
