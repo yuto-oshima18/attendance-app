@@ -11,17 +11,12 @@ class AdminMiddleware
     /**
      * Handle an incoming request.
      * admin_statusがtrueであるかを確認する。
-     *
-     * @param  Request $request
-     * @param  Closure $next
-     * 
-     * @return Response
      */
     public function handle(
         Request $request,
         Closure $next
     ): Response {
-        if (!auth()->user()->admin_status) {
+        if (! auth()->user()->admin_status) {
             abort(403);
         }
 

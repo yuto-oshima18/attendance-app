@@ -110,7 +110,7 @@ class AttendanceController extends Controller
 
         $user = Auth::user();
         $latestAttendance = $user->attendanceRecords()->latest('date')->first();
-        if (!empty($latestAttendance)) {
+        if (! empty($latestAttendance)) {
             $latestAttendanceId = $latestAttendance->id;
         }
 

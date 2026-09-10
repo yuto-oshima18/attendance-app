@@ -110,7 +110,7 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/admin/attendance/list', function () {
-            return view('admin.admin-attendance-list');
-        })->name('admin.attendance.index');
+    Route::get('/admin/attendance/list', function () {
+        return view('admin.admin-attendance-list');
+    })->name('admin.attendance.index');
 });

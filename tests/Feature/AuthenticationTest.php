@@ -4,12 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
-
     use RefreshDatabase;
 
     /**
@@ -185,7 +183,7 @@ class AuthenticationTest extends TestCase
             'email' => '',
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('login.store'), $loginData);
 
         $response->assertSessionHasErrors([
@@ -227,7 +225,7 @@ class AuthenticationTest extends TestCase
             'email' => $email,
             'password' => '',
         ];
-        
+
         $response = $this->post(route('login.store'), $loginData);
 
         $response->assertSessionHasErrors([
@@ -269,7 +267,7 @@ class AuthenticationTest extends TestCase
             'email' => 'test@test',
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('login.store'), $loginData);
 
         $response->assertSessionHasErrors([
@@ -308,7 +306,7 @@ class AuthenticationTest extends TestCase
             'email' => '',
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('admin.login.store'), $loginData);
 
         $response->assertSessionHasErrors([
@@ -347,7 +345,7 @@ class AuthenticationTest extends TestCase
             'email' => $email,
             'password' => '',
         ];
-        
+
         $response = $this->post(route('admin.login.store'), $loginData);
 
         $response->assertSessionHasErrors([
@@ -386,7 +384,7 @@ class AuthenticationTest extends TestCase
             'email' => 'test@test',
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('admin.login.store'), $loginData);
 
         $response->assertSessionHasErrors([
@@ -435,7 +433,7 @@ class AuthenticationTest extends TestCase
             'email' => $email,
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('login.store'), $loginData);
 
         $response->assertRedirect(route('attendance.create'));
@@ -485,7 +483,7 @@ class AuthenticationTest extends TestCase
             'email' => $email,
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('login.store'), $loginData);
 
         $response->assertRedirect(route('attendance.create'));
@@ -497,7 +495,7 @@ class AuthenticationTest extends TestCase
      * 項目：ログイン認証機能（一般ユーザー）:追加分テスト
      *
      * 1. ログイン画面（一般ユーザー）より正常にログインする。
-     * 2. 正常にログアウトする。 
+     * 2. 正常にログアウトする。
      */
     public function 一般用ページからログアウトできる(): void
     {
@@ -520,7 +518,7 @@ class AuthenticationTest extends TestCase
             'email' => $email,
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('login.store'), $loginData);
 
         $response->assertRedirect(route('attendance.create'));
@@ -558,7 +556,7 @@ class AuthenticationTest extends TestCase
             'email' => $email,
             'password' => $password,
         ];
-        
+
         $response = $this->post(route('login.store'), $loginData);
 
         $response->assertRedirect(route('attendance.create'));
@@ -580,6 +578,4 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(200);
     }
-
-    
 }
