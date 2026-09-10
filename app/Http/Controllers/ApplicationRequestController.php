@@ -14,6 +14,7 @@ class ApplicationRequestController extends Controller
      * 申請一覧画面（一般ユーザー）を表示する。
      * 認証済みユーザ−の申請したすべての申請を表示する。
      * 勤怠情報の日付を追加した申請情報とユーザー情報をviewに渡す。
+     * 管理者であれば、管理者用のviewを表示する。
      *
      * @redirect View
      */
@@ -31,6 +32,12 @@ class ApplicationRequestController extends Controller
                     return $application;
                 });
             });
+
+        /*
+        if ($user->admin_status) {
+            return view('admin.admin-application-list');
+        }
+        */
 
         return view('user.user-application-list', compact('user', 'formattedApplications'));
     }

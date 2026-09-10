@@ -110,7 +110,9 @@ class AttendanceController extends Controller
 
         $user = Auth::user();
         $latestAttendance = $user->attendanceRecords()->latest('date')->first();
-        $latestAttendanceId = $latestAttendance->id;
+        if (!empty($latestAttendance)) {
+            $latestAttendanceId = $latestAttendance->id;
+        }
 
         switch ($action) {
             case 'clock_in':
