@@ -27,17 +27,12 @@ class ApplicationRequestController extends Controller
             ->get()
             ->flatMap(function ($attendanceRecord) {
                 return $attendanceRecord->applications->map(function ($application) use ($attendanceRecord) {
+                    $application->id = $application->attendance_record_id;
                     $application->date = $attendanceRecord->date;
 
                     return $application;
                 });
             });
-
-        /*
-        if ($user->admin_status) {
-            return view('admin.admin-application-list');
-        }
-        */
 
         return view('user.user-application-list', compact('user', 'formattedApplications'));
     }
@@ -93,7 +88,7 @@ class ApplicationRequestController extends Controller
             }
         }
 
-        return redirect(route('stamp_correction_request.index'));
+        return redirect(route('stamp.correction.request.index'));
     }
 
     /**

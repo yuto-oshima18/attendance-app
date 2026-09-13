@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminApplicationRequestController;
+use App\Http\Controllers\AdminAttendanceController;
+use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\ApplicationRequestController;
 use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
@@ -98,10 +101,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{id}', [ApplicationRequestController::class, 'store'])->name('app.attendance.show');
-    Route::get('/stamp_correction_request/list', [ApplicationRequestController::class, 'index'])->name('stamp_correction_request.index');
+    Route::get('stamp_correction_request/list', function () {
+        if (auth()->user()->admin_status) {
+            return app(AdminApplicationRequestController::class)->index();
+        }
 
-    // 仮に設定(ブレード内URLが違うため)
-    Route::get('/application/{id}', [AttendanceController::class, 'show'])->name('application.show');
+        return app(ApplicationRequestController::class)->index();
+    })->name('stamp.correction.request.index');
+
 });
 
 /*
@@ -110,7 +117,13 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/attendance/list', function () {
-        return view('admin.admin-attendance-list');
-    })->name('admin.attendance.index');
+    Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.index');
+    Route::get('admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('admin.attendance.show');
+    Route::post('admin/attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
+    Route::get('/admin/staff/list', [AdminStaffController::class, 'index'])->name('admin.staff.index');
+    Route::get('/admin/attendance/staff/{id}', [AdminStaffController::class, 'show'])->name('admin.attendance.staff.show');
+    Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminApplicationRequestController::class, 'show'])
+        ->name('stamp.correction.request.approve.show');
+    Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminApplicationRequestController::class, 'update'])
+        ->name('stamp.correction.request.approve.update');
 });

@@ -155,12 +155,14 @@ class AttendanceController extends Controller
 
         $data->breaks = $data->breakTimes;
 
-        $applicationRecord = $data->applications()->latest('application_date')->first();
-        if (! empty($applicationRecord)) {
-            if ($applicationRecord->approval_status === '承認待ち') {
-                $data->application = $applicationRecord;
-            }
-        }
+        // $applicationRecord = $data->applications()->latest('application_date')->first();
+
+        $applicationRecord = $data->applications()
+            ->where('approval_status', '承認待ち')
+            ->latest('application_date')
+            ->first();
+
+        $data->application = $applicationRecord;
 
         return view('user.user-detail', compact('user', 'data'));
     }

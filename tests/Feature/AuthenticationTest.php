@@ -578,4 +578,120 @@ class AuthenticationTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    /**
+     * @test
+     * 項目：ログイン認証機能（管理者）:追加分テスト
+     *
+     * 1. ログイン画面（管理者）より正常にログインする。
+     */
+    public function 管理者ログインページにて正しい認証情報でログインできる(): void
+    {
+        $name = 'test';
+        $email = 'test@example.com';
+        $password = 'password';
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'admin_status' => true,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'name' => $name,
+            'email' => $email,
+            'admin_status' => true,
+        ]);
+
+        $loginData = [
+            'email' => $email,
+            'password' => $password,
+        ];
+
+        $response = $this->post(route('admin.login.store'), $loginData);
+
+        $response->assertRedirect(route('admin.attendance.index'));
+        $this->assertAuthenticatedAs($user);
+    }
+
+    /**
+     * @test
+     * 項目：ログイン認証機能（管理者）:追加分テスト
+     *
+     * 1. ログイン画面（管理者）より正常にログインする。
+     * 2. 正常にログアウトする。
+     */
+    public function 管理者ページからログアウトできる(): void
+    {
+        $name = 'test';
+        $email = 'test@example.com';
+        $password = 'password';
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'admin_status' => true,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'name' => $name,
+            'email' => $email,
+            'admin_status' => true,
+        ]);
+
+        $loginData = [
+            'email' => $email,
+            'password' => $password,
+        ];
+
+        $response = $this->post(route('admin.login.store'), $loginData);
+
+        $response->assertRedirect(route('admin.attendance.index'));
+        $this->assertAuthenticatedAs($user);
+
+        $response = $this->post(route('admin.logout'));
+        $response->assertRedirect(route('admin.login'));
+    }
+
+    /**
+     * @test
+     * 項目：ログイン認証機能（管理者）:追加分テスト
+     *
+     * 1. ログイン画面（管理者）より正常にログインする。
+     * 2. 管理者ログインページにアクセスする。
+     */
+    public function 認証済みユーザーは管理者ログインページにアクセスするとリダイレクトされる(): void
+    {
+        $name = 'test';
+        $email = 'test@example.com';
+        $password = 'password';
+
+        $user = User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+            'admin_status' => true,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'name' => $name,
+            'email' => $email,
+            'admin_status' => true,
+        ]);
+
+        $loginData = [
+            'email' => $email,
+            'password' => $password,
+        ];
+
+        $response = $this->post(route('admin.login.store'), $loginData);
+
+        $response->assertRedirect(route('admin.attendance.index'));
+        $this->assertAuthenticatedAs($user);
+
+        $response = $this->post(route('admin.login'));
+        $response->assertRedirect(route('attendance.create'));
+    }
 }

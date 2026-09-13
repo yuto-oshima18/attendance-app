@@ -191,7 +191,7 @@ class StoreApplicationTest extends TestCase
                 ],
             ],
 
-            '備考のバリデーションで備考に入力せず、バリデーションエラーとなる' => [
+            '申請のバリデーションで備考に入力せず、バリデーションエラーとなる' => [
                 [
                     'new_clock_in' => '09:00:00',
                     'new_clock_out' => '18:00:00',
@@ -201,7 +201,7 @@ class StoreApplicationTest extends TestCase
                 ],
             ],
 
-            '備考のバリデーションで備考に数値を入力し、バリデーションエラーとなる' => [
+            '申請のバリデーションで備考に数値を入力し、バリデーションエラーとなる' => [
                 [
                     'new_clock_in' => '09:00:00',
                     'new_clock_out' => '18:00:00',
@@ -212,7 +212,7 @@ class StoreApplicationTest extends TestCase
             ],
 
             // 境界値テスト
-            '備考のバリデーションで備考に256文字の文字列を入力し、バリデーションエラーとなる' => [
+            '申請のバリデーションで備考に256文字の文字列を入力し、バリデーションエラーとなる' => [
                 [
                     'new_clock_in' => '09:00:00',
                     'new_clock_out' => '18:00:00',

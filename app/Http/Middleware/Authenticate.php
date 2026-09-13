@@ -19,6 +19,10 @@ class Authenticate extends Middleware
             return route('admin.login');
         }
 
+        if ($request->is('stamp_correction_request/approve/*')) {
+            return route('admin.login');
+        }
+
         return route('login');
     }
 }
