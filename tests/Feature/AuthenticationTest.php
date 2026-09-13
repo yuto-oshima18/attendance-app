@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -163,21 +166,18 @@ class AuthenticationTest extends TestCase
         $email = 'test@example.com';
         $password = 'password';
 
-        $userData = [
+        User::create([
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'password_confirmation' => $password,
-        ];
-
-        $this->post(route('register.store'), $userData);
+            'email_verified_at' => now(),
+        ]);
 
         $this->assertDatabaseHas('users', [
             'name' => $name,
             'email' => $email,
-        ]);
 
-        $this->post(route('logout'));
+        ]);
 
         $loginData = [
             'email' => '',
@@ -205,21 +205,17 @@ class AuthenticationTest extends TestCase
         $email = 'test@example.com';
         $password = 'password';
 
-        $userData = [
+        User::create([
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'password_confirmation' => $password,
-        ];
-
-        $this->post(route('register.store'), $userData);
+            'email_verified_at' => now(),
+        ]);
 
         $this->assertDatabaseHas('users', [
             'name' => $name,
             'email' => $email,
         ]);
-
-        $this->post(route('logout'));
 
         $loginData = [
             'email' => $email,
@@ -247,21 +243,17 @@ class AuthenticationTest extends TestCase
         $email = 'test@example.com';
         $password = 'password';
 
-        $userData = [
+        User::create([
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'password_confirmation' => $password,
-        ];
-
-        $this->post(route('register.store'), $userData);
+            'email_verified_at' => now(),
+        ]);
 
         $this->assertDatabaseHas('users', [
             'name' => $name,
             'email' => $email,
         ]);
-
-        $this->post(route('logout'));
 
         $loginData = [
             'email' => 'test@test',
@@ -507,6 +499,7 @@ class AuthenticationTest extends TestCase
             'name' => $name,
             'email' => $email,
             'password' => $password,
+            'email_verified_at' => now(),
         ]);
 
         $this->assertDatabaseHas('users', [
@@ -633,6 +626,7 @@ class AuthenticationTest extends TestCase
             'email' => $email,
             'password' => $password,
             'admin_status' => true,
+            'email_verified_at' => now(),
         ]);
 
         $this->assertDatabaseHas('users', [
@@ -693,5 +687,85 @@ class AuthenticationTest extends TestCase
 
         $response = $this->post(route('admin.login'));
         $response->assertRedirect(route('attendance.create'));
+    }
+
+    /**
+     * @test
+     * 項目：メール認証機能
+     *
+     * 1. 会員登録をする
+     * 2. 認証メールを送信する
+     */
+    public function 会員登録後、認証メールが送信される(): void
+    {
+        // すべての通知を「実際に送らない」ようにモック
+        Notification::fake();
+
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->post(route('verification.send'));
+
+        // VerifyEmail 通知が $user に対して送信されたことを確認
+        Notification::assertSentTo(
+            $user,
+            VerifyEmail::class
+        );
+    }
+
+    /**
+     * @test
+     * 項目：メール認証機能
+     *
+     * 1. メール認証導線画面を表示する
+     * 2. 「認証はこちらから」ボタンを押下
+     * 3. メール認証サイトを表示する
+     */
+    public function メール認証誘導画面で「認証はこちらから」ボタンを押下するとメール認証サイトに遷移する(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('verification.notice'));
+
+        $response->assertStatus(200);
+
+        // Mailpit画面へ遷移
+        $response = $this->actingAs($user)->get('http://localhost:8025');
+
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @test
+     * 項目：メール認証機能
+     *
+     * 1. メール認証を完了する
+     * 2. 勤怠登録画面を表示する
+     */
+    public function メール認証サイトのメール認証を完了すると、勤怠登録画面に遷移する(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => null,
+        ]);
+
+        $url = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            [
+                'id' => $user->getKey(),
+                'hash' => sha1($user->getEmailForVerification()),
+            ]
+        );
+
+        $response = $this->actingAs($user)->get($url);
+
+        $response->assertRedirect(route('attendance.create'));
+
+        $this->assertNotNull(
+            $user->fresh()->email_verified_at
+        );
     }
 }

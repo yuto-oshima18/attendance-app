@@ -5,6 +5,8 @@ use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\ApplicationRequestController;
 use App\Http\Controllers\AttendanceController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 use Laravel\Fortify\Http\Controllers\RegisteredUserController;
@@ -61,6 +63,30 @@ Route::middleware('guest')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
+| メール認証
+|--------------------------------------------------------------------------
+*/
+// 認証催促画面
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+// 認証ボタン押下後
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return redirect(route('attendance.create'));
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// 認証メール送信
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', '認証メールを送信しました。');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+/*
+|--------------------------------------------------------------------------
 | 管理者ログイン
 |--------------------------------------------------------------------------
 */
@@ -83,19 +109,19 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [
     AuthenticatedSessionController::class,
     'destroy',
-])->middleware('auth')->name('logout');
+])->middleware(['auth', 'verified'])->name('logout');
 
 Route::post('/admin/logout', [
     AuthenticatedSessionController::class,
     'destroy',
-])->middleware('auth')->name('admin.logout');
+])->middleware(['auth', 'verified'])->name('admin.logout');
 
 /*
 |--------------------------------------------------------------------------
 | 一般ユーザー画面
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
@@ -116,7 +142,7 @@ Route::middleware('auth')->group(function () {
 | 管理者画面
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.index');
     Route::get('/admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('admin.attendance.show');
     Route::post('/admin/attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
