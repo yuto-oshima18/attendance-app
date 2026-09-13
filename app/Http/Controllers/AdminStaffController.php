@@ -6,6 +6,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminStaffController extends Controller
 {
@@ -118,5 +119,97 @@ class AdminStaffController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * 対象ユーザーの月毎の勤怠情報をCSVファイルにエクスポートする。
+     *
+     * @param  Request  $request  対象ユーザーのIDと対象月の情報
+     * @return StreamedResponse csv用に整形した勤怠情報をCSV化して返却
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $date = Carbon::createFromFormat('Y-m', $request->year_month);
+        $formattedDate = $date->format('Y-m');
+
+        $user = User::findOrFail($request->user_id);
+        $formattedAttendanceRecords = $user->attendanceRecords()
+            ->whereYear('date', substr($formattedDate, 0, 4))
+            ->whereMonth('date', substr($formattedDate, 5, 2))
+            ->with('breakTimes')
+            ->get();
+
+        $formattedAttendanceRecords->each(function ($attendanceRecord) {
+            // 休憩時間の合計を計算
+            $totalBreakSeconds = $attendanceRecord->breakTimes->sum(function ($breakTime) {
+                if (! $breakTime->break_in || ! $breakTime->break_out) {
+                    return 0;
+                }
+
+                return strtotime($breakTime->break_out) - strtotime($breakTime->break_in);
+            });
+
+            // 休憩時間の合計を追加
+            if (! empty($totalBreakSeconds)) {
+                $attendanceRecord->total_break_time = gmdate('H:i', $totalBreakSeconds);
+            }
+
+            // 勤務時間
+            $totalWorkSeconds = 0;
+
+            if ($attendanceRecord->clock_in && $attendanceRecord->clock_out) {
+                $totalWorkSeconds = strtotime($attendanceRecord->clock_out) - strtotime($attendanceRecord->clock_in);
+            }
+
+            $totalTimeSeconds = $totalWorkSeconds - $totalBreakSeconds;
+
+            // 勤務時間の合計を追加
+            if (! empty($totalTimeSeconds)) {
+                $attendanceRecord->total_time = gmdate('H:i', $totalTimeSeconds);
+            }
+        });
+
+        return response()->streamDownload(function () use ($formattedAttendanceRecords, $user, $formattedDate) {
+            $handle = fopen('php://output', 'w');
+
+            // BOM
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // ユーザー名・対象月
+            fputcsv($handle, [
+                $user->name,
+                Carbon::createFromFormat('Y-m', $formattedDate)->format('Y年m月'),
+            ]);
+
+            // ヘッダー
+            fputcsv($handle, [
+                '日付',
+                '出勤',
+                '退勤',
+                '休憩',
+                '合計',
+            ]);
+
+            // データ
+            foreach ($formattedAttendanceRecords as $attendanceRecord) {
+                fputcsv($handle, [
+                    $attendanceRecord->date
+                        ? Carbon::parse($attendanceRecord->date)->format('Y-m-d')
+                        : '',
+                    $attendanceRecord->clock_in ?? '',
+                    $attendanceRecord->clock_out ?? '',
+                    $attendanceRecord->total_break_time
+                        ? Carbon::parse($attendanceRecord->total_break_time)->format('G:i')
+                        : '',
+                    $attendanceRecord->total_time
+                        ? Carbon::parse($attendanceRecord->total_time)->format('G:i')
+                        : '',
+                ]);
+            }
+
+            fclose($handle);
+        }, 'attendance.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }

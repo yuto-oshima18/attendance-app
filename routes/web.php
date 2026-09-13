@@ -101,7 +101,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
     Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{id}', [ApplicationRequestController::class, 'store'])->name('app.attendance.show');
-    Route::get('stamp_correction_request/list', function () {
+    Route::get('/stamp_correction_request/list', function () {
         if (auth()->user()->admin_status) {
             return app(AdminApplicationRequestController::class)->index();
         }
@@ -118,12 +118,15 @@ Route::middleware('auth')->group(function () {
 */
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('admin.attendance.index');
-    Route::get('admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('admin.attendance.show');
-    Route::post('admin/attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
+    Route::get('/admin/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('admin.attendance.show');
+    Route::post('/admin/attendance/{id}', [AdminAttendanceController::class, 'update'])->name('admin.attendance.update');
     Route::get('/admin/staff/list', [AdminStaffController::class, 'index'])->name('admin.staff.index');
     Route::get('/admin/attendance/staff/{id}', [AdminStaffController::class, 'show'])->name('admin.attendance.staff.show');
     Route::get('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminApplicationRequestController::class, 'show'])
         ->name('stamp.correction.request.approve.show');
     Route::post('/stamp_correction_request/approve/{attendance_correct_request_id}', [AdminApplicationRequestController::class, 'update'])
         ->name('stamp.correction.request.approve.update');
+
+    Route::post('/export', [AdminStaffController::class, 'export'])->name('export');
+
 });

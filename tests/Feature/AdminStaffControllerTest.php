@@ -259,4 +259,92 @@ class AdminStaffControllerTest extends TestCase
         $response->assertSee('test');
         $response->assertSee('修正');
     }
+
+    /**
+     * @test
+     * 項目：ユーザー情報取得機能（管理者）:追加分テスト
+     *
+     * 1. 管理者ユーザーにログインをする
+     * 2. 勤怠一覧ページに存在する「CSV出力」ボタンを押下する
+     */
+    public function スタッフの勤怠詳細リストを月毎に_cs_vへエクスポートできる(): void
+    {
+        $generalUser = User::factory()->create([
+            'attendance_status' => '勤務外',
+        ]);
+
+        $adminUser = User::factory()->create([
+            'attendance_status' => '勤務外',
+            'admin_status' => true,
+        ]);
+
+        // 一般ユーザーの勤怠情報登録
+        $generalFormattedDate = now()->subDay()->format('Y-m-d');
+        $generalFormattedTimeClockIn = now()->subDay()->format('H:i:s');
+        $generalFormattedTimeClockOut = now()->subDay()->addHours(9)->format('H:i:s');
+        $generalFormattedTimeBreakIn = now()->subDay()->addHours(3)->format('H:i:s');
+        $generalFormattedTimeBreakOut = now()->subDay()->addHours(4)->format('H:i:s');
+        $generalAttendanceRecordId = 1;
+        $generalAttendanceRecord = $generalUser->attendanceRecords()->create([
+            'id' => $generalAttendanceRecordId,
+            'date' => $generalFormattedDate,
+            'clock_in' => $generalFormattedTimeClockIn,
+            'clock_out' => $generalFormattedTimeClockOut,
+            'comment' => 'test',
+        ]);
+
+        $generalAttendanceRecord->breakTimes()->create([
+            'break_in' => $generalFormattedTimeBreakIn,
+            'break_out' => $generalFormattedTimeBreakOut,
+        ]);
+
+        $response = $this->actingAs($adminUser)->post(route('export').'?'.http_build_query([
+            'user_id' => $generalUser->id,
+            'year_month' => now()->subDay()->format('Y-m'),
+        ]));
+
+        $response->assertStatus(200);
+
+        $content = $response->streamedContent();
+
+        // BOMが付いていることを確認
+        $this->assertStringStartsWith("\xEF\xBB\xBF", $content);
+
+        // BOMを除去
+        $content = substr($content, 3);
+
+        // CSVを行ごとに配列化
+        $lines = array_map(
+            'str_getcsv',
+            preg_split('/\r\n|\r|\n/', trim($content))
+        );
+
+        // 1行目：ユーザー名・対象月
+        $this->assertSame([
+            $generalUser->name,
+            now()->subDay()->format('Y年m月'),
+        ], $lines[0]);
+
+        // 2行目：ヘッダー
+        $this->assertSame([
+            '日付',
+            '出勤',
+            '退勤',
+            '休憩',
+            '合計',
+        ], $lines[1]);
+
+        // 3行目：勤怠データ
+        $this->assertSame([
+            now()->subDay()->format('Y-m-d'),
+            $generalFormattedTimeClockIn,
+            $generalFormattedTimeClockOut,
+            '1:00',
+            '8:00',
+        ], $lines[2]);
+
+        // 列数が5列であることを確認
+        $this->assertCount(5, $lines[1]);
+        $this->assertCount(5, $lines[2]);
+    }
 }

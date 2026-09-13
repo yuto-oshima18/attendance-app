@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -135,6 +136,26 @@ class UnauthenticatedRedirectTest extends TestCase
     public function 修正申請承認画面（管理者）へアクセス時、未認証ユーザはログイン画面にリダイレクトされる(): void
     {
         $response = $this->get(route('stamp.correction.request.approve.show', 1));
+
+        $response->assertRedirect(route('admin.login'));
+    }
+
+    /**
+     * @test
+     * 項目：未ログイン時の追加分テスト
+     *
+     * 1. 未ログイン状態でCSV出力のURLアクセス
+     */
+    public function cs_v出力の_ur_lアクセス時、未認証ユーザはログイン画面にリダイレクトされる(): void
+    {
+        $User = User::factory()->create([
+            'attendance_status' => '勤務外',
+        ]);
+
+        $response = $this->post(route('export').'?'.http_build_query([
+            'user_id' => $User->id,
+            'year_month' => now()->format('Y-m'),
+        ]));
 
         $response->assertRedirect(route('admin.login'));
     }
