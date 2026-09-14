@@ -14,7 +14,8 @@ class AttendanceRecordSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
+        // User1以外の勤怠情報を作成
+        $users = User::whereKeyNot(1)->get();
 
         // 過去3ヶ月の平日を作成
         $dates = [];

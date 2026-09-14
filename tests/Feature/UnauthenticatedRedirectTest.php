@@ -148,15 +148,29 @@ class UnauthenticatedRedirectTest extends TestCase
      */
     public function cs_v出力の_ur_lアクセス時、未認証ユーザはログイン画面にリダイレクトされる(): void
     {
-        $User = User::factory()->create([
+        $user = User::factory()->create([
             'attendance_status' => '勤務外',
         ]);
 
         $response = $this->post(route('export').'?'.http_build_query([
-            'user_id' => $User->id,
+            'user_id' => $user->id,
             'year_month' => now()->format('Y-m'),
         ]));
 
         $response->assertRedirect(route('admin.login'));
+    }
+
+    /**
+     * @test
+     * 項目：マイ勤怠レポート機能
+     *
+     * 1. 未認証で GET /attendance/report を実行
+     */
+    public function ゲストはレポートページにアクセスできない(): void
+    {
+
+        $response = $this->get(route('attendance.report'));
+
+        $response->assertRedirect(route('login'));
     }
 }
