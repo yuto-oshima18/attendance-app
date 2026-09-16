@@ -155,8 +155,6 @@ class AttendanceController extends Controller
 
         $data->breaks = $data->breakTimes;
 
-        // $applicationRecord = $data->applications()->latest('application_date')->first();
-
         $applicationRecord = $data->applications()
             ->where('approval_status', '承認待ち')
             ->latest('application_date')
@@ -165,29 +163,5 @@ class AttendanceController extends Controller
         $data->application = $applicationRecord;
 
         return view('user.user-detail', compact('user', 'data'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

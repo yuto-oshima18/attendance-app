@@ -69,19 +69,6 @@ class AdminAttendanceController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
      * 勤怠詳細画面（管理者）を表示する。
      * 勤怠の詳細を表示する。
      * 対象のユーザ情報と対象勤怠詳細をviewに渡す。
@@ -90,7 +77,7 @@ class AdminAttendanceController extends Controller
      *
      * @teturn View
      */
-    public function show(string $id)
+    public function show(string $id): View
     {
         $attendanceRecord = AttendanceRecord::with('user', 'breakTimes', 'applications')->findOrFail($id);
         $user = $attendanceRecord->user;
@@ -109,14 +96,6 @@ class AdminAttendanceController extends Controller
         $attendanceRecord->application = $applicationRecord;
 
         return view('admin.admin-detail', compact('user', 'attendanceRecord'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**
@@ -163,13 +142,5 @@ class AdminAttendanceController extends Controller
         });
 
         return redirect(route('admin.attendance.index'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

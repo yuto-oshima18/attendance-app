@@ -33,7 +33,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'new_clock_in.required' => '出勤時間は必須です',

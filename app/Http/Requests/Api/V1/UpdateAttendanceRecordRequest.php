@@ -38,7 +38,7 @@ class UpdateAttendanceRecordRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'date.required' => '勤怠日は必須です。',

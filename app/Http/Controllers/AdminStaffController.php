@@ -25,22 +25,6 @@ class AdminStaffController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * スタッフ別勤怠一覧画面（管理者）を表示する。
      * 対象ユーザーの勤怠一覧を月毎に表示する。
      * 対象年月と前月、翌月、対象勤怠情報をviewに渡す。
@@ -95,30 +79,6 @@ class AdminStaffController extends Controller
         });
 
         return view('admin.staff-attendance-list', compact('date', 'user', 'previousMonth', 'nextMonth', 'formattedAttendanceRecords'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 
     /**

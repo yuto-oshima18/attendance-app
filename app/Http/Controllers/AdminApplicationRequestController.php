@@ -29,16 +29,6 @@ class AdminApplicationRequestController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    public function store(Request $request, string $id) {}
-
-    /**
      * 修正申請承認画面（管理者）
      * 対象の申請の詳細を表示する。
      * 対象の申請情報をビューに渡す。
@@ -58,8 +48,6 @@ class AdminApplicationRequestController extends Controller
 
         return view('admin.admin-application-detail', compact('user', 'application'));
     }
-
-    public function edit(string $id) {}
 
     /**
      * 修正申請承認画面（管理者）
@@ -103,13 +91,5 @@ class AdminApplicationRequestController extends Controller
         });
 
         return redirect(route('stamp.correction.request.index'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
