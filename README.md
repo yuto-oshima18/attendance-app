@@ -1,66 +1,371 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# COACHTECH　勤怠管理アプリ
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 概要
+COACHTECH 模擬案件1にて作成の、勤怠管理アプリです。
 
-## About Laravel
+勤怠の打刻と管理を行うアプリになります。
+・一般ユーザーにて勤怠打刻(出勤・退勤・休憩)と勤怠レポートの確認、打刻した勤怠の修正申請を行う機能
+・管理者にて一般ユーザーが打刻した勤怠情報と申請の確認を行う機能
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 使用技術
+- OS（Dockerが動作する任意のOS）: macOS
+- PHP : 8.5.8
+- Laravel : 10.50.3
+- DB : MySQL 8.4.10
+- フロントエンド : Vite, Figmaデザイン
+- 開発ツール : Docker, Laravel Sail, phpMyAdmin 5.2.3,
+- その他使用技術 : Laravel Fortify, メールの認証機能, Laravel Sanctum 3.3.3, Laravel PHPUnit, streamDownloadによるCSVのDL, API
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ログイン情報
+- ユーザー1（一般）
+user1@example.com
+password
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- ユーザー2（一般）
+user2@example.com
+password
 
-## Learning Laravel
+- ユーザー3（管理者）
+user3@example.com
+password
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 開発環境URL
+### 会員登録画面（一般ユーザー）
+- http://localhost/register
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### メール認証誘導画面（一般ユーザー）
+- http://localhost/email/verify
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### ログイン画面（一般ユーザー）
+- http://localhost/login
 
-## Laravel Sponsors
+### 出勤登録画面（一般ユーザー）
+- http://localhost/attendance
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 勤怠一覧画面（一般ユーザー）
+- http://localhost/attendance/list
 
-### Premium Partners
+### 勤怠詳細画面（一般ユーザー）
+- http://localhost/attendance/{id}
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 申請一覧画面（一般ユーザー）
+- http://localhost/stamp_correction_request/list
 
-## Contributing
+### マイ勤怠レポート画面（一般ユーザー）
+- http://localhost/attendance/report
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### ログイン画面（管理者）
+- http://localhost/admin/login
 
-## Code of Conduct
+### 勤怠一覧画面（管理者）
+- http://localhost/admin/attendance/list
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 勤怠詳細画面（管理者）
+- http://localhostadmin/attendance/{id}
 
-## Security Vulnerabilities
+### スタッフ一覧画面（管理者）
+- http://localhost/admin/staff/list
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### スタッフ別勤怠一覧画面（管理者）
+- http://localhost/admin/attendance/staff/{id}
 
-## License
+### 申請一覧画面（管理者）
+- http://localhost/stamp_correction_request/list
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 修正申請承認画面（管理者）
+- http://localhost/stamp_correction_request/approve/{attendance_correct_request_id}
+
+## APIエンドポイント一覧
+下記の通り実装済。
+
+### 勤怠一覧(認証不要)
+- メソッド：GET
+- URL：http://localhost/api/v1/attendance-records
+- リクエストパラメータ
+user_id 任意	ユーザーIDで絞り込み
+date 任意	日付で絞り込み（YYYY-MM-DD）
+month 任意	YYYY-MM 形式の年月で絞り込み
+page 任意	ページ番号（デフォルト: 1）
+per_page 任意	1ページあたりの件数（デフォルト: 20、最大: 100）
+
+### 勤怠詳細(認証不要)
+- メソッド：GET
+- http://localhost/api/v1/attendance-records/{attendanceRecord}
+
+### 勤怠登録(認証必須)
+- メソッド：POST
+- URL：http://localhost/api/v1/attendance-records
+- リクエストボディ
+date 必須	勤怠日（YYYY-MM-DD）
+clock_in 必須	出勤時刻（HH:MM:SS）
+clock_out 任意	退勤時刻（HH:MM:SS、clock_in より後）
+comment 任意	備考（max:255）
+
+### 勤怠更新(認証必須)
+- メソッド：PUT
+- URL：http://localhost/api/v1/attendance-records/{attendanceRecord}
+- リクエストボディ
+date 変更する場合必須	勤怠日（YYYY-MM-DD）
+clock_in 変更する場合必須	出勤時刻（HH:MM:SS）
+clock_out 任意	退勤時刻（HH:MM:SS、clock_in より後）
+comment 任意	備考（max:255）
+
+### 勤怠削除(認証必須)
+- メソッド：DELETE
+- URL：http://localhost/api/v1/attendance-records/{attendanceRecord}
+
+## ER図
+```mermaid
+erDiagram
+    users {
+        bigint_unsigned id PK
+        varchar(255) name
+        varchar(255) email UK
+        timestamp email_verified_at
+        varchar(255) password
+        varchar(100) remember_token
+        enum attendance_status
+        boolean admin_status
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    attendance_records {
+        bigint_unsigned id PK
+        bigint_unsigned user_id FK "UNIQUE(user_id, date)"
+        date date 
+        time clock_in
+        time clock_out
+        varchar(255) comment
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    break_times {
+        bigint_unsigned id PK
+        bigint_unsigned attendance_record_id FK
+        time break_in
+        time break_out
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    applications {
+        bigint_unsigned id PK
+        bigint_unsigned attendance_record_id FK
+        time new_clock_in
+        time new_clock_out
+        varchar(255) comment
+        enum approval_status
+        date application_date
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    proposal_breaks {
+        bigint_unsigned id PK
+        bigint_unsigned application_id FK
+        time new_break_in
+        time new_break_out
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    users ||--o{ attendance_records : "has many"
+    attendance_records ||--o{ break_times : "has many"
+    attendance_records ||--o{ applications : "has many"
+    applications ||--o{ proposal_breaks : "has many"
+```
+
+## 画面遷移図
+```mermaid
+stateDiagram-v2
+    state ゲスト(一般) {
+        ログイン画面（一般ユーザー） --> 出勤登録画面（一般ユーザー） : ログイン
+        会員登録画面（一般ユーザー） --> ログイン画面（一般ユーザー） : リンク押下
+        ログイン画面（一般ユーザー） --> 会員登録画面（一般ユーザー） : リンク押下
+        ログイン画面（一般ユーザー） --> メール認証誘導画面（一般ユーザー） : メール未認証時
+        会員登録画面（一般ユーザー） --> メール認証誘導画面（一般ユーザー） : メール未認証時
+        
+    }
+
+    state メール認証 {
+        メール認証誘導画面（一般ユーザー） --> メール認証画面
+        メール認証画面 --> 出勤登録画面（一般ユーザー） : メール認証完了
+
+    }
+
+    state 勤怠(一般ログイン後) {
+        出勤登録画面（一般ユーザー）
+    }
+
+    state 申請(一般ログイン後) {
+        申請一覧画面（一般ユーザー） --> 勤怠詳細画面（一般ユーザー） : 詳細押下
+        勤怠詳細画面（一般ユーザー） --> 申請一覧画面（一般ユーザー） : 修正押下
+    }
+
+    state 勤怠一覧(一般ログイン後) {
+        勤怠一覧画面（一般ユーザー） --> 勤怠詳細画面（一般ユーザー） : 詳細押下
+        勤怠詳細画面（一般ユーザー）
+    }
+
+    state レポート(一般ログイン後) {
+        マイ勤怠レポート画面（一般ユーザー）
+    }
+
+    勤怠(一般ログイン後) --> 勤怠一覧画面（一般ユーザー） : リンク押下
+    勤怠(一般ログイン後) --> 申請一覧画面（一般ユーザー） : リンク押下
+    勤怠(一般ログイン後) --> マイ勤怠レポート画面（一般ユーザー） : リンク押下
+    勤怠一覧(一般ログイン後) --> 出勤登録画面（一般ユーザー） : リンク押下
+    勤怠一覧(一般ログイン後) --> 申請一覧画面（一般ユーザー） : リンク押下
+    勤怠一覧(一般ログイン後) --> マイ勤怠レポート画面（一般ユーザー） : リンク押下
+    申請(一般ログイン後) --> 出勤登録画面（一般ユーザー） : リンク押下
+    申請(一般ログイン後) --> 勤怠一覧画面（一般ユーザー） : リンク押下
+    申請(一般ログイン後) --> マイ勤怠レポート画面（一般ユーザー） : リンク押下
+    レポート(一般ログイン後) --> 出勤登録画面（一般ユーザー） : リンク押下
+    レポート(一般ログイン後) --> 勤怠一覧画面（一般ユーザー） : リンク押下
+    レポート(一般ログイン後) --> 申請一覧画面（一般ユーザー） : リンク押下
+    
+
+
+    state ゲスト(管理者) {
+        ログイン画面（管理者） --> 勤怠一覧画面（管理者） : ログイン
+    }
+
+    state スタッフ一覧(管理者ログイン後) {
+        スタッフ一覧画面（管理者） --> スタッフ別勤怠一覧画面（管理者） : 詳細押下
+        スタッフ別勤怠一覧画面（管理者） --> 勤怠詳細画面（管理者） : 詳細押下
+    }
+
+    state 勤怠一覧(管理者ログイン後) {
+        勤怠一覧画面（管理者） --> 勤怠詳細画面（管理者） : 詳細押下
+        勤怠詳細画面（管理者） --> 勤怠一覧画面（管理者）  : 修正押下
+        
+    }
+
+    state 申請一覧(管理者ログイン後) {
+        申請一覧画面（管理者） --> 修正申請承認画面（管理者） : 詳細押下
+        修正申請承認画面（管理者） --> 申請一覧画面（管理者） : 承認押下
+    }
+
+    勤怠一覧(管理者ログイン後)  --> スタッフ一覧画面（管理者） : リンク押下
+    勤怠一覧(管理者ログイン後)  --> 申請一覧画面（管理者） : リンク押下
+    スタッフ一覧(管理者ログイン後)  --> 勤怠一覧画面（管理者） : リンク押下
+    スタッフ一覧(管理者ログイン後)  --> 申請一覧画面（管理者） : リンク押下
+    申請一覧(管理者ログイン後) --> 勤怠一覧画面（管理者） : リンク押下
+    申請一覧(管理者ログイン後) --> スタッフ一覧画面（管理者） : リンク押下
+```
+
+## 環境構築手順
+### 1. 前提
+以下がインストールされていること
+- Git
+- Docker Desktop
+- GitHubへアクセスできる環境
+
+### 2. GitHubからリポジトリをクローン
+リポジトリをクローンしたいディレクトリで以下のコマンドを実行する
+
+```bash
+git clone https://github.com/yuto-oshima18/attendance-app.git
+cd attendance-app
+```
+
+### 3. Composerパッケージをインストール
+以下のDockerコマンドを実行してComposerパッケージをインストールする
+
+```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    -e COMPOSER_CACHE_DIR=/tmp/composer_cache \
+    laravelsail/php82-composer:latest \
+    composer install
+```
+
+### 4. 環境変数ファイルを作成
+
+```bash
+cp .env.example .env
+```
+
+### 5. フロントエンドのセットアップ (Vite)　
+フロントエンドのスタイリングにTailwind CSSを使用します。
+
+1. Sailコンテナの起動
+```bash
+./vendor/bin/sail up -d
+```
+
+※M1/M2/M3 Mac（Apple Silicon）をお使いの方
+Apple Silicon搭載のMacでは、`sail up -d`実行時に以下のエラーが発生することがあります：
+```bash
+no matching manifest for linux/arm64/v8
+
+解決方法: `compose.yaml`を開き、mysqlサービスに`platform: 'linux/amd64'`を追加してください。
+mysql:
+    image: 'mysql/mysql-server:8.0'
+    platform: 'linux/amd64'  # ← この行を追加
+    ports:
+```
+
+2. NPM依存パッケージのインストール
+```bash
+./vendor/bin/sail npm install
+```
+
+3. Vite開発サーバーの起動確認
+```bash
+# 注意: ./vendor/bin/sail npm run dev は実行したままにしておく必要があります。(新規ターミナル推奨)
+./vendor/bin/sail npm run dev
+```
+
+### 6. Sailのエイリアス設定
+リポジトリのルートで以下のコマンドを実行する
+
+```bash
+# エイリアスを設定して 'sail' だけでコマンドを実行できるようにする
+echo "alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'" >> ~/.zshrc
+
+# または bash の場合
+# echo "alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'" >> ~/.bashrc
+
+# シェルを再起動するか、新しいターミナルを開いてエイリアスを有効にする
+exec $SHELL
+```
+
+### 7. アプリケーションキーの生成
+リポジトリのルートで以下のコマンドを実行する
+
+```bash
+sail artisan key:generate
+```
+
+### 8. データベースのマイグレーションと初期データ投入
+以下のコマンドでテーブルを作成し、初期データを投入する
+
+```bash
+# 既存のデータベースをリセットして初期レコードを投入
+sail artisan migrate:fresh --seed
+```
+
+## テスト方法
+下記のコマンドを実行する
+passed/deprecatedのみ表示されること
+
+```bash
+sail artisan test
+```
+
+## その他
+### ミドルウェア画面
+- phpMyAdmin: http://localhost:8080
+- Mailpit: http://localhost:8025
+
+### 備考
+初期データ投入の際、要件により当月の勤怠情報を17日分作成しているため、既に当日分の勤怠が存在する可能性があります。
+実際の画面より勤怠情報を登録する際はphpMyAdminより現在の日付の勤怠情報を確認し、存在する場合は削除してください。
+
+## 作成者
+大島 佑斗
