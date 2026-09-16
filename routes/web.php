@@ -5,6 +5,7 @@ use App\Http\Controllers\AdminAttendanceController;
 use App\Http\Controllers\AdminStaffController;
 use App\Http\Controllers\ApplicationRequestController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendanceReportController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -125,7 +126,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('attendance.index');
-    Route::get('/attendance/report', [AttendanceController::class, 'report'])->name('attendance.report');
+    Route::get('/attendance/report', [AttendanceReportController::class, 'report'])->name('attendance.report');
     Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
     Route::post('/attendance/{id}', [ApplicationRequestController::class, 'store'])->name('app.attendance.show');
     Route::get('/stamp_correction_request/list', function () {
